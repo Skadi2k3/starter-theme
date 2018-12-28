@@ -6,4 +6,8 @@
  * @subpackage  Timber
  */
 
-Timber::render( array( 'sidebar.twig' ), $data );
+$context = [
+  'data' => json_encode($data)
+];
+
+Timber::render( array( 'sidebar.twig' ), $context );

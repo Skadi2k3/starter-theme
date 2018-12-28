@@ -1,4 +1,8 @@
 <?php
+
+require_once(__DIR__ . '/vendor/autoload.php');
+$timber = new Timber\Timber();	// Initialize Timber
+
 /**
  * Timber starter-theme
  * https://github.com/timber/starter-theme
@@ -32,113 +36,135 @@ Timber::$dirname = array( 'templates', 'views' );
 Timber::$autoescape = false;
 
 
-/**
- * We're going to configure our theme inside of a subclass of Timber\Site
- * You can move this to its own file and include here via php's include("MySite.php")
+/** This is where you add some context
+ *
+ * @param string $context context['this'] Being the Twig's {{ this }}.
  */
-class StarterSite extends Timber\Site {
-	/** Add timber support. */
-	public function __construct() {
-		add_action( 'after_setup_theme', array( $this, 'theme_supports' ) );
-		add_filter( 'timber_context', array( $this, 'add_to_context' ) );
-		add_filter( 'get_twig', array( $this, 'add_to_twig' ) );
-		add_action( 'init', array( $this, 'register_post_types' ) );
-		add_action( 'init', array( $this, 'register_taxonomies' ) );
-		parent::__construct();
-	}
-	/** This is where you can register custom post types. */
-	public function register_post_types() {
+function add_to_context( $context ) {
+	$context['foo'] = 'bar';
+	$context['stuff'] = 'I am a value set in your functions.php file';
+	$context['notes'] = 'These values are available everytime you call Timber::get_context();';
+	$context['widget_sidebar'] = Timber::get_widgets( 'widget_sidebar' );
+	$context['menu'] = new Timber\Menu();
+	$context['site'] = new Timber\Site();
+	return $context;
+}
+add_filter( 'timber_context', 'add_to_context' );
 
-	}
-	/** This is where you can register custom taxonomies. */
-	public function register_taxonomies() {
+/** This is where you enqueue your styles and scripts */
+function enqueue_scripts() {
+	// Theme stylesheet.
+	wp_enqueue_style( 'start-theme-style', get_theme_file_uri( '/static/css/styles.css' ) );
+}
+add_action( 'wp_enqueue_scripts', 'enqueue_scripts' );
 
-	}
+function theme_supports() {
+	// Add default posts and comments RSS feed links to head.
+	add_theme_support( 'automatic-feed-links' );
 
-	/** This is where you add some context
-	 *
-	 * @param string $context context['this'] Being the Twig's {{ this }}.
+	/*
+	 * Let WordPress manage the document title.
+	 * By adding theme support, we declare that this theme does not use a
+	 * hard-coded <title> tag in the document head, and expect WordPress to
+	 * provide it for us.
 	 */
-	public function add_to_context( $context ) {
-		$context['foo'] = 'bar';
-		$context['stuff'] = 'I am a value set in your functions.php file';
-		$context['notes'] = 'These values are available everytime you call Timber::get_context();';
-		$context['menu'] = new Timber\Menu();
-		$context['site'] = $this;
-		return $context;
-	}
+	add_theme_support( 'title-tag' );
 
-	public function theme_supports() {
-		// Add default posts and comments RSS feed links to head.
-		add_theme_support( 'automatic-feed-links' );
-
-		/*
-		 * Let WordPress manage the document title.
-		 * By adding theme support, we declare that this theme does not use a
-		 * hard-coded <title> tag in the document head, and expect WordPress to
-		 * provide it for us.
-		 */
-		add_theme_support( 'title-tag' );
-
-		/*
-		 * Enable support for Post Thumbnails on posts and pages.
-		 *
-		 * @link https://developer.wordpress.org/themes/functionality/featured-images-post-thumbnails/
-		 */
-		add_theme_support( 'post-thumbnails' );
-
-		/*
-		 * Switch default core markup for search form, comment form, and comments
-		 * to output valid HTML5.
-		 */
-		add_theme_support(
-			'html5', array(
-				'comment-form',
-				'comment-list',
-				'gallery',
-				'caption',
-			)
-		);
-
-		/*
-		 * Enable support for Post Formats.
-		 *
-		 * See: https://codex.wordpress.org/Post_Formats
-		 */
-		add_theme_support(
-			'post-formats', array(
-				'aside',
-				'image',
-				'video',
-				'quote',
-				'link',
-				'gallery',
-				'audio',
-			)
-		);
-
-		add_theme_support( 'menus' );
-	}
-
-	/** This Would return 'foo bar!'.
+	/*
+	 * Enable support for Post Thumbnails on posts and pages.
 	 *
-	 * @param string $text being 'foo', then returned 'foo bar!'.
+	 * @link https://developer.wordpress.org/themes/functionality/featured-images-post-thumbnails/
 	 */
-	public function myfoo( $text ) {
-		$text .= ' bar!';
-		return $text;
-	}
+	add_theme_support( 'post-thumbnails' );
 
-	/** This is where you can add your own functions to twig.
-	 *
-	 * @param string $twig get extension.
+	/*
+	 * Switch default core markup for search form, comment form, and comments
+	 * to output valid HTML5.
 	 */
-	public function add_to_twig( $twig ) {
-		$twig->addExtension( new Twig_Extension_StringLoader() );
-		$twig->addFilter( new Twig_SimpleFilter( 'myfoo', array( $this, 'myfoo' ) ) );
-		return $twig;
-	}
+	add_theme_support(
+		'html5', array(
+			'comment-form',
+			'comment-list',
+			'gallery',
+			'caption',
+		)
+	);
+
+	/*
+	 * Enable support for Post Formats.
+	 *
+	 * See: https://codex.wordpress.org/Post_Formats
+	 */
+	add_theme_support(
+		'post-formats', array(
+			'aside',
+			'image',
+			'video',
+			'quote',
+			'link',
+			'gallery',
+			'audio',
+		)
+	);
+
+	add_theme_support( 'menus' );
+}
+add_action( 'after_setup_theme', 'theme_supports' );
+
+/** This is where you can register custom post types. */
+function register_post_types() {
 
 }
+add_action( 'init', 'register_post_types' );
 
-new StarterSite();
+/** This is where you can register custom taxonomies. */
+function register_taxonomies() {
+
+}
+add_action( 'init', 'register_taxonomies' );
+
+/** This is where you can register misc stuff */
+function starter_theme_register_sidebars() {
+	register_sidebar([
+		'name' => 'User customizable Sidebar',
+		'id' => 'widget_sidebar'
+	]);
+}
+add_action( 'widgets_init', 'starter_theme_register_sidebars' );
+
+/** remove the wordpress number in the head */
+remove_action('wp_head', 'rsd_link');
+remove_action('wp_head', 'wlwmanifest_link');
+remove_action('wp_head', 'wp_generator');
+remove_action('wp_head', 'start_post_rel_link');
+remove_action('wp_head', 'index_rel_link');
+remove_action('wp_head', 'adjacent_posts_rel_link');
+
+/**
+ * Remove the Emoji Support
+ */
+function remove_emoji()
+{
+	remove_action('wp_head', 'print_emoji_detection_script', 7);
+	remove_action('admin_print_scripts', 'print_emoji_detection_script');
+	remove_action('admin_print_styles', 'print_emoji_styles');
+	remove_action('wp_print_styles', 'print_emoji_styles');
+	remove_filter('the_content_feed', 'wp_staticize_emoji');
+	remove_filter('comment_text_rss', 'wp_staticize_emoji');
+	remove_filter('wp_mail', 'wp_staticize_emoji_for_email');
+	add_filter('tiny_mce_plugins', 'remove_tinymce_emoji');
+}
+add_action('init', 'remove_emoji');
+function remove_tinymce_emoji($plugins) {
+	if (!is_array($plugins)) {
+		return array();
+	}
+	return array_diff($plugins, array(
+		'wpemoji'
+	));
+}
+
+/**
+ * Twig extensions.
+ */
+require get_parent_theme_file_path( '/inc/twig-extensions.php' );
