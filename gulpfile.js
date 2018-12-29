@@ -20,10 +20,10 @@ let sourceDir = 'source';
 
 /*
  *
- *    STYLES
+ *		STYLES
  *
  */
-function styles() {
+function styles({build = false} = {}) {
   return gulp.src(sourceDir + '/styles/*.scss')
     .pipe($.plumber())
     .pipe($.sourcemaps.init())
@@ -32,28 +32,22 @@ function styles() {
       precision: 10,
       includePaths: ['.']
     }).on('error', $.sass.logError))
-    .pipe($.autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}))
-};
-gulp.task('styles', () => {
-  return styles()
-		.pipe( $.sourcemaps.write('.'))
+		.pipe($.autoprefixer({browsers: ['> 1%', 'last 2 versions', 'Firefox ESR']}))
+		.pipe($.if(build, $.cssnano({safe: true, autoprefixer: false})))
+		.pipe($.sourcemaps.write('.'))
     .pipe(gulp.dest(buildDir + '/styles'))
-    .pipe(reload({stream: true}));
-});
-gulp.task('styles:build', () => {
-  return styles()
-    .pipe($.cssnano({safe: true, autoprefixer: false}))
-    .pipe( $.sourcemaps.write('.'))
-    .pipe(gulp.dest(buildDir + '/styles'));
-})
+    .pipe($.if(!build, reload({stream: true})));
+};
+gulp.task('styles', () => styles());
+gulp.task('styles:build', () => styles({ build: true }));
 
 
 /*
  *
- *    SCRIPTS
+ *		SCRIPTS
  *
  */
-function scripts() {
+function scripts({build = false} = {}) {
 	const b = browserify({
 		entries: sourceDir + '/scripts/site.js',
 		transform: babelify,
@@ -64,20 +58,14 @@ function scripts() {
 		.pipe(source('site.js'))
 		.pipe($.plumber())
 		.pipe(buffer())
-		.pipe($.sourcemaps.init({ loadMaps: true }));
-};
-gulp.task('scripts', () => {
-  return scripts()
+		.pipe($.sourcemaps.init({ loadMaps: true }))
+		.pipe($.if(build, $.uglify({ compress: { drop_console: true } })))
 		.pipe($.sourcemaps.write('.'))
-    .pipe(gulp.dest(buildDir + '/scripts'))
-    .pipe(reload({ stream: true }));
-});
-gulp.task('scripts:build', () => {
-  return scripts()
-    .pipe($.uglify({ compress: { drop_console: true } }))
-    .pipe($.sourcemaps.write('.'))
-    .pipe(gulp.dest(buildDir + '/scripts'))
-});
+		.pipe(gulp.dest(buildDir + '/scripts'))
+		.pipe($.if(!build, reload({ stream: true })))
+};
+gulp.task('scripts', () => scripts());
+gulp.task('scripts:build', () => scripts({ build: true }));
 
 
 /*
