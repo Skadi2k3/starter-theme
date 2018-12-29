@@ -1,3 +1,7 @@
 vendor
 wp-content
 acf-json
+node_modules
+static
+bower_components
+test/bower_components

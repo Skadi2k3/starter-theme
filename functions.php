@@ -54,9 +54,11 @@ add_filter( 'timber_context', 'add_to_context' );
 /** This is where you enqueue your styles and scripts */
 function enqueue_scripts() {
 	// Theme stylesheet.
-	wp_enqueue_style( 'start-theme-style', get_theme_file_uri( '/static/css/styles.css' ) );
+	wp_enqueue_style( 'start-theme-style', get_theme_file_uri( '/static/styles/main.css' ) );
+	wp_enqueue_script( 'start-theme-site', get_theme_file_uri( '/static/scripts/site.js' ), array(), false, true );
 }
 add_action( 'wp_enqueue_scripts', 'enqueue_scripts' );
+
 
 function theme_supports() {
 	// Add default posts and comments RSS feed links to head.
