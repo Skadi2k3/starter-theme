@@ -5,14 +5,12 @@ Forked from the [Timber Starter Theme](https://github.com/timber/starter-theme).
 
 ## Installing the Theme
 
-Install this theme as you would any other, and be sure the Timber plugin is activated. But hey, let's break it down into some bullets:
-
-1. Run composer install in your theme folder to install Timber.
-2. Download the zip for this theme (or clone it) and move it to `wp-content/themes` in your WordPress installation.
-3. Rename the folder to something that makes sense for your website (generally no spaces and all lowercase). You could keep the name `timber-starter-theme` but the point of a starter theme is to make it your own!
-4. Activate the theme in Appearance >  Themes.
+1. Download the zip for this theme (or clone it) and move it to `wp-content/themes` in your WordPress installation.
+2. Rename the folder.
+3. Run composer install in your theme folder to install Timber.
+4. Activate the theme in Wordpress Admin Area > Appearance >  Themes.
 5. Use Timber according to [the docs](https://github.com/jarednova/timber/wiki).
-6. Install Advanced Custom Fields Pro (optional, but do get the Pro version) [ACF Cookbook](https://timber.github.io/docs/guides/acf-cookbook/#nav)
+6. Install Advanced Custom Fields (optional, but do get the Pro version) [ACF Cookbook](https://timber.github.io/docs/guides/acf-cookbook/#nav)
 
 ## Installing the work environment
 
@@ -25,9 +23,9 @@ The project uses a similar setup as generator webapp, where you can find a cookb
 
 ## Structure
 
-`templates/` contains all of your Twig templates. These pretty much correspond 1 to 1 with the PHP files that respond to the WordPress template hierarchy. At the end of each PHP template, you'll notice a `Timber::render()` function whose first parameter is the Twig file where that data (or `$context`) will be used. Just an FYI.
+`templates/` contains the Twig templates that get loaded from their PHP file counterpart in the theme root using the `Timber::render()` function.
 
-`bin/` and `tests/` ... basically don't worry about (or remove) these unless you know what they are and want to.
+`source/` contains your theme source files like styles, scripts, fonts and static htm.
 
 ## Other Resources
 
