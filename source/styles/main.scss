@@ -10,3 +10,20 @@
 #wp-calendar tbody .pad { background: none; }
 #wp-calendar tfoot #next { font-size: 10px; text-transform: uppercase; text-align: right; }
 #wp-calendar tfoot #prev { font-size: 10px; text-transform: uppercase; padding-top: 10px; }
+
+
+hr {
+	border-color: black;
+}
+
+.nav-main {
+	li {
+		display: inline-block;
+		&:not(:last-of-type) {
+			margin-right: .5em;
+		}
+	}
+}
+.menu-item.active {
+	text-decoration: underline;
+}

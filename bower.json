@@ -2,7 +2,8 @@
   "name": "start-theme",
   "private": true,
   "dependencies": {
-    "modernizr": "~2.8.1"
+    "modernizr": "~2.8.1",
+    "bootstrap": "^4.2.1"
   },
   "devDependencies": {
     "chai": "^4.2.0",

@@ -1,7 +1,6 @@
 <?php
 
-require_once(__DIR__ . '/vendor/autoload.php');
-$timber = new Timber\Timber();	// Initialize Timber
+$theme_name = 'test1_theme';
 
 /**
  * Timber starter-theme
@@ -13,15 +12,21 @@ $timber = new Timber\Timber();	// Initialize Timber
  */
 
 if ( ! class_exists( 'Timber' ) ) {
-	add_action( 'admin_notices', function() {
-		echo '<div class="error"><p>Timber not activated. Make sure you activate the plugin in <a href="' . esc_url( admin_url( 'plugins.php#timber' ) ) . '">' . esc_url( admin_url( 'plugins.php' ) ) . '</a></p></div>';
-	});
 
-	add_filter('template_include', function( $template ) {
-		return get_stylesheet_directory() . '/static/no-timber.html';
-	});
+	if (file_exists(__DIR__ . '/vendor/autoload.php')) {
+		require_once(__DIR__ . '/vendor/autoload.php');
+		$timber = new Timber\Timber();	// Initialize Timber
+	} else {
+		add_action( 'admin_notices', function() {
+			echo '<div class="error"><p>Timber not activated. Make sure you activate the plugin in <a href="' . esc_url( admin_url( 'plugins.php#timber' ) ) . '">' . esc_url( admin_url( 'plugins.php' ) ) . '</a></p></div>';
+		});
 
-	return;
+		add_filter('template_include', function( $template ) {
+			return get_stylesheet_directory() . '/static/no-timber.html';
+		});
+
+		return;
+	}
 }
 
 /**
@@ -41,12 +46,11 @@ Timber::$autoescape = false;
  * @param string $context context['this'] Being the Twig's {{ this }}.
  */
 function add_to_context( $context ) {
-	$context['foo'] = 'bar';
-	$context['stuff'] = 'I am a value set in your functions.php file';
-	$context['notes'] = 'These values are available everytime you call Timber::get_context();';
-	$context['widget_sidebar'] = Timber::get_widgets( 'widget_sidebar' );
+	$context['sidebar'] = Timber::get_sidebar('sidebar.php');
+	$context['current_url'] = Timber\URLHelper::get_current_url();
 	$context['menu'] = new Timber\Menu();
 	$context['site'] = new Timber\Site();
+	$context['global_content'] = get_field('global_content', 'option');
 	return $context;
 }
 add_filter( 'timber_context', 'add_to_context' );
@@ -54,6 +58,7 @@ add_filter( 'timber_context', 'add_to_context' );
 /** This is where you enqueue your styles and scripts */
 function enqueue_scripts() {
 	// Theme stylesheet.
+	wp_enqueue_style( 'start-theme-vendor-styles', get_theme_file_uri( '/static/styles/vendor.css' ) );
 	wp_enqueue_style( 'start-theme-style', get_theme_file_uri( '/static/styles/main.css' ) );
 	wp_enqueue_script( 'start-theme-site', get_theme_file_uri( '/static/scripts/site.js' ), array(), false, true );
 }
@@ -127,10 +132,17 @@ add_action( 'init', 'register_taxonomies' );
 
 /** This is where you can register misc stuff */
 function starter_theme_register_sidebars() {
-	register_sidebar([
-		'name' => 'User customizable Sidebar',
-		'id' => 'widget_sidebar'
-	]);
+	global $theme_name;
+
+	register_sidebar( array(
+		'name'          => __( 'Blog Sidebar', $theme_name ),
+		'id'            => 'sidebar-1',
+		'description'   => __( 'Add widgets here to appear in your sidebar on blog posts and archive pages.', $theme_name ),
+		'before_widget' => '<section id="%1$s" class="widget %2$s">',
+		'after_widget'  => '</section>',
+		'before_title'  => '<h2 class="widget-title">',
+		'after_title'   => '</h2>',
+	) );
 }
 add_action( 'widgets_init', 'starter_theme_register_sidebars' );
 
@@ -170,3 +182,5 @@ function remove_tinymce_emoji($plugins) {
  * Twig extensions.
  */
 require get_parent_theme_file_path( '/inc/twig-extensions.php' );
+require get_parent_theme_file_path( '/inc/acf-options.php' );
+require get_parent_theme_file_path( '/inc/post-type-players.php' );

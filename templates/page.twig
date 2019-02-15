@@ -7,9 +7,8 @@
 				<h1 class="article-h1">{{post.title}}</h1>
 				<div class="article-body">
 					{{post.content}}
-
 					{% for entry in post.meta('blocks') %}
-						{% include './blocks/%s.twig'|format(entry.acf_fc_layout) with entry %}
+						{% include './modules/%s.twig'|format(entry.acf_fc_layout) with entry %}
 					{% endfor %}
 				</div>
 			</section>

@@ -1,0 +1,15 @@
+<div class="block-a">
+  <h1>
+    {{ headline }}
+  </h1>
+	<p>{{ copy }}</p>
+  <div>
+		{% set img = Image(image) %}
+		<figure>
+			<img src="{{ img }}" alt="{{img.alt}}">
+				{% if img.caption %}
+					<figcaption>{{ img.caption }}</figcaption>
+				{% endif %}
+		</figure>
+  </div>
+</div>

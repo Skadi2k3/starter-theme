@@ -1,0 +1,17 @@
+{% if menu %}
+	<ul{% if navbar and not nested %} class="navbar-nav mr-auto"{% endif %}>
+	{% for item in menu %}
+
+		{% set active_item = item.link == current_url %}
+
+		<li class="{{ item.classes | join(' ') }}{% if navbar %} nav-item{% endif %}{% if active_item %} active{% endif %}">
+
+			<a target="{{ item.target }}" href="{{ item.link }}"{% if navbar %} class="nav-link"{% endif %}>
+				{{ item.title }}{% if active_item %} <span class="sr-only">(current)</span>{% endif %}
+			</a>
+
+			{% include "partials/menu.twig" with {'menu': item.get_children, 'nested': true} %}
+		</li>
+	{% endfor %}
+	</ul>
+{% endif %}

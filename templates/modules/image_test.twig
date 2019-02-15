@@ -1,0 +1,15 @@
+<section class="image-test">
+	{% set img = TimberImage(image) %}
+   <img width="300" src="{{ img.src|resize(300, 200) }}"
+	 	srcset="
+			{{img.src|resize(300)}} 300w,
+			{{img.src|resize(400)}} 400w,
+			{{img.src|resize(500)}} 500w,
+			{{img.src|resize(600)}} 600w,
+			{{img.src|resize(800)}} 800w,
+			{{img.src|resize(1200)}} 1200w,
+			{{img.src|resize(2000)}} 2000w,
+			{{img.src|resize(2400)}} 2400w"
+		sizes="300px"
+		alt="{{ img.alt }}">
+</section>
